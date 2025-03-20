@@ -16,13 +16,15 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/")
-    public ResponseEntity<?> users(@RequestHeader("Authorization") String token,  @PathVariable Long ig) {
-        String username = jwtUtil.validateToken(token);
-        return ResponseEntity.ok(userService.userProfile(username));
+    public ResponseEntity<?> users() {
+        return ResponseEntity.ok(userService.usersNames());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> user(@RequestHeader("Authorization") String token,  @PathVariable Long ig) {
-        return ResponseEntity.ok(userService.usersNames());
+    public ResponseEntity<?> user(@RequestHeader("Authorization") String token,  @PathVariable Long id) {
+        String tokenVerify = token.substring(7);
+        String username = jwtUtil.validateToken(tokenVerify);
+        return ResponseEntity.ok(userService.userProfile(username));
     }
+
 }
