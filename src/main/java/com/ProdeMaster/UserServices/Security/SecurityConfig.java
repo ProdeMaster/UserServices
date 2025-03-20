@@ -17,9 +17,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // es lo mismo que .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("auth/login", "auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
+                        //.requestMatchers(HttpMethod.GET, "/users/**").permitAll()
                         .anyRequest().authenticated()
+                        //.anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAuthenticationFilter(), SessionManagementFilter.class);
