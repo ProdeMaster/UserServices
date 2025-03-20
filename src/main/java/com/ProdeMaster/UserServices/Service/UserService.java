@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -35,5 +37,10 @@ public class UserService {
 
     public Optional<UserModel> userProfile(String userName) {
         return userRepository.findByUsername(userName);
+    }
+
+    public List<String> usersNames() {
+        List<UserModel> users = userRepository.findAll();
+        return users.stream().map(UserModel::getUsername).collect(Collectors.toList());
     }
 }
