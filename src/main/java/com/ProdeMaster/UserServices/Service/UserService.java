@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public String authenticate(String username, String password) {
+    public String getAuthenticatedUser(String username, String password) {
         Optional<UserModel> user = userRepository.findByUsername(username);
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
             return jwtUtil.generateToken(username);
@@ -39,8 +40,46 @@ public class UserService {
         return userRepository.findByUsername(userName);
     }
 
-    public List<String> usersNames() {
+    public List<String> getUsersNames() {
         List<UserModel> users = userRepository.findAll();
         return users.stream().map(UserModel::getUsername).collect(Collectors.toList());
+    }
+
+    public List<UserModel> searchUsers(String username, String email) {
+        return userRepository.searchUsers(username, email);
+    }
+
+    public void updateUser(UserModel userData, String username, String token) {
+        Optional<UserModel> user = userRepository.findByUsername(username);
+        if (user.isPresent() && Objects.equals(user.get().getUsername(), jwtUtil.validateToken(token))) {
+            user.get().setEmail (userData.getEmail());
+            user.get().setUsername(userData.getUsername());
+            userRepository.save(user.get());
+        }
+        else {
+            throw new RuntimeException("Usuario no encontrado o token inválido");
+        }
+    }
+
+    public void softDeleteUser(String username, String token) {
+        Optional<UserModel> user = userRepository.findByUsername(username);
+        if (user.isPresent() && Objects.equals(user.get().getUsername(), jwtUtil.validateToken(token))) {
+            user.get().setDeleted(true);
+            userRepository.save(user.get());
+        }
+        else {
+            throw new RuntimeException("Usuario no encontrado o token inválido");
+        }
+    }
+
+    public void ActiveUser (String username, String password) {
+        Optional<UserModel> user = userRepository.findByUsername(username);
+        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
+            user.get().setDeleted(false);
+            userRepository.save(user.get());
+        }
+        else {
+            throw new RuntimeException("Usuario no encontrado o token inválido");
+        }
     }
 }
