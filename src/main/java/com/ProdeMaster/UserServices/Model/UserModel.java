@@ -22,6 +22,8 @@ public class UserModel {
     @DefaultValue("USER")
     private String role;
 
+    private Boolean deleted = false;
+
     public UserModel() {
     }
 
@@ -67,5 +69,13 @@ public class UserModel {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
