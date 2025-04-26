@@ -1,6 +1,7 @@
 package com.ProdeMaster.UserServices.Controller;
 
 import com.ProdeMaster.UserServices.Dto.UpdateUserDto;
+import com.ProdeMaster.UserServices.Dto.UserDto;
 import com.ProdeMaster.UserServices.Security.JwtUtil;
 import com.ProdeMaster.UserServices.Service.UserService;
 import org.slf4j.Logger;
@@ -51,6 +52,12 @@ public class UserController {
         return ResponseEntity.ok(userService.userProfile(username));
     }
 
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
+        Optional<UserDto> user = userService.softDeleteUser(token);
+        LOGGER.info("Delete user: {}", user.get().getUsername());
+        return ResponseEntity.ok(user);
+    }
 //    @GetMapping("/search")
 //    public ResponseEntity<?> getUsersByName(@RequestParam String name) {
 //

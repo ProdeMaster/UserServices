@@ -65,11 +65,14 @@ public class UserService {
         }
     }
 
-    public void softDeleteUser(String username, String token) {
-        Optional<UserModel> user = userRepository.findByUsername(username);
-        if (user.isPresent() && Objects.equals(user.get().getUsername(), jwtUtil.validateToken(token))) {
+    public Optional<UserDto> softDeleteUser(String token) {
+        String tokenVerify = token.substring(7);
+        String userName = jwtUtil.validateToken(tokenVerify);
+        Optional<UserModel> user = userRepository.findByUsername(userName);
+        if (user.isPresent()) {
             user.get().setDeleted(true);
             userRepository.save(user.get());
+            return userRepository.findByUsername(userName).map(User -> new UserDto(User.getId(), User.getUsername(), User.getEmail()));
         }
         else {
             throw new RuntimeException("Usuario no encontrado o token inválido");
