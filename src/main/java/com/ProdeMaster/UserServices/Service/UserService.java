@@ -1,5 +1,7 @@
 package com.ProdeMaster.UserServices.Service;
 
+import com.ProdeMaster.UserServices.Dto.UpdateUserDto;
+import com.ProdeMaster.UserServices.Dto.UserDto;
 import com.ProdeMaster.UserServices.Model.UserModel;
 import com.ProdeMaster.UserServices.Repository.UserRepository;
 import com.ProdeMaster.UserServices.Security.JwtUtil;
@@ -36,20 +38,22 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<UserModel> userProfile(String userName) {
-        return userRepository.findByUsername(userName);
+    public Optional<UserDto> userProfile(String userName) {
+        return userRepository.findByUsername(userName).map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail()));
     }
 
     public List<String> getUsersNames() {
+        System.out.println("GET USERS NAMES");
         List<UserModel> users = userRepository.findAll();
+        System.out.println(users);
         return users.stream().map(UserModel::getUsername).collect(Collectors.toList());
     }
 
-    public List<UserModel> searchUsers(String username, String email) {
-        return userRepository.searchUsers(username, email);
-    }
+//    public List<UserModel> searchUsers(String username, String email) {
+//        return userRepository.searchUsers(username, email);
+//    }
 
-    public void updateUser(UserModel userData, String username, String token) {
+    public void updateUser(UpdateUserDto userData, String username, String token) {
         Optional<UserModel> user = userRepository.findByUsername(username);
         if (user.isPresent() && Objects.equals(user.get().getUsername(), jwtUtil.validateToken(token))) {
             user.get().setEmail (userData.getEmail());

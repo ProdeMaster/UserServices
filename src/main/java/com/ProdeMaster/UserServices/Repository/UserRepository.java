@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, Long> {
     Optional<UserModel> findByUsername(String username);
-
-    @Query("SELECT u FROM User u WHERE " +
-            "(:username IS NULL OR u.username LIKE %:username%) AND " +
-            "(:email IS NULL OR u.email LIKE %:email%) AND " +
-            "u.deleted = false")
-    List<UserModel> searchUsers(@Param("username") String username, @Param("email") String email);
+//
+//    @Query("SELECT u FROM User u WHERE " +
+//            "(:username IS NULL OR u.username LIKE %:username%) AND " +
+//            "(:email IS NULL OR u.email LIKE %:email%) AND " +
+//            "u.deleted = false")
+//    List<UserModel> searchUsers(@Param("username") String username, @Param("email") String email);
 }
 
