@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -49,9 +50,17 @@ public class UserService {
         return users.stream().map(UserModel::getUsername).collect(Collectors.toList());
     }
 
-//    public List<UserModel> searchUsers(String username, String email) {
-//        return userRepository.searchUsers(username, email);
-//    }
+    public Stream<UserDto> searchUsers(String token, String username, String email) {
+        String tokenVerify = token.substring(7);
+        String userName = jwtUtil.validateToken(tokenVerify);
+            Optional<UserModel> user = userRepository.findByUsername(userName);
+            if (user.isPresent()) {
+                List<UserModel> users = userRepository.searchUsers(username, email);
+                return users.stream().map(u -> new UserDto(u.getId(), u.getUsername(), u.getEmail()));
+            } else {
+                throw new RuntimeException("Usuario no encontrado o token inválido");
+            }
+    }
 
     public void updateUser(UpdateUserDto userData, String username, String token) {
         Optional<UserModel> user = userRepository.findByUsername(username);

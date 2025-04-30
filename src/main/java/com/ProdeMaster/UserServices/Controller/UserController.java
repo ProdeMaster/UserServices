@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/user")
@@ -58,8 +58,10 @@ public class UserController {
         LOGGER.info("Delete user: {}", user.get().getUsername());
         return ResponseEntity.ok(user);
     }
-//    @GetMapping("/search")
-//    public ResponseEntity<?> getUsersByName(@RequestParam String name) {
-//
-//    }
+    @GetMapping("/search")
+    public ResponseEntity<?> getSearchUser(@RequestHeader("Authorization") String token, @RequestParam String username, @RequestParam String email) {
+        LOGGER.info("Search user: {}", username);
+        Stream<UserDto> users = userService.searchUsers(token, username, email);
+        return ResponseEntity.ok(users);
+    }
 }
