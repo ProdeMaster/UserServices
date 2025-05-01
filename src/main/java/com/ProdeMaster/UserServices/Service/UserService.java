@@ -62,12 +62,19 @@ public class UserService {
             }
     }
 
-    public void updateUser(UpdateUserDto userData, String username, String token) {
+    public UserDto updateUser(String token, UpdateUserDto userData) {
+        String tokenVerify = token.substring(7);
+        String username = jwtUtil.validateToken(tokenVerify);
         Optional<UserModel> user = userRepository.findByUsername(username);
-        if (user.isPresent() && Objects.equals(user.get().getUsername(), jwtUtil.validateToken(token))) {
-            user.get().setEmail (userData.getEmail());
-            user.get().setUsername(userData.getUsername());
-            userRepository.save(user.get());
+        if (user.isPresent()) {
+            if (userData.getEmail() != null && !userData.getEmail().isBlank()) {
+                user.get().setEmail (userData.getEmail());
+            }
+            if (userData.getUsername() != null && !userData.getUsername().isBlank()) {
+                user.get().setUsername(userData.getUsername());
+            }
+            UserModel userUpdate = userRepository.save(user.get());
+            return new UserDto(userUpdate.getId(), userUpdate.getUsername(), userUpdate.getEmail());
         }
         else {
             throw new RuntimeException("Usuario no encontrado o token inválido");
