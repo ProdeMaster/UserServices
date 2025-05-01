@@ -44,9 +44,7 @@ public class UserService {
     }
 
     public List<String> getUsersNames() {
-        System.out.println("GET USERS NAMES");
-        List<UserModel> users = userRepository.findAll();
-        System.out.println(users);
+        List<UserModel> users = userRepository.findByDeletedFalse();
         return users.stream().map(UserModel::getUsername).collect(Collectors.toList());
     }
 
@@ -62,8 +60,6 @@ public class UserService {
             }
     }
 
-    // IMPORTANTE
-    //FALTA QUE DEVUELVA EL NUEVO TOKEN CUANDO ACTUALIZO EL USUARIO
     public String updateUser(String token, UpdateUserDto userData) {
         String tokenVerify = token.substring(7);
         String username = jwtUtil.validateToken(tokenVerify);

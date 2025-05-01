@@ -18,5 +18,7 @@ public interface UserRepository extends JpaRepository<UserModel, Long> {
         "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
         "u.deleted = false")
     List<UserModel> searchUsers(@Param("username") String username, @Param("email") String email);
+
+    List<UserModel> findByDeletedFalse();
 }
 
