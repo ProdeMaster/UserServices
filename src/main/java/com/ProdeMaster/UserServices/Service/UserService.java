@@ -62,7 +62,9 @@ public class UserService {
             }
     }
 
-    public UserDto updateUser(String token, UpdateUserDto userData) {
+    // IMPORTANTE
+    //FALTA QUE DEVUELVA EL NUEVO TOKEN CUANDO ACTUALIZO EL USUARIO
+    public String updateUser(String token, UpdateUserDto userData) {
         String tokenVerify = token.substring(7);
         String username = jwtUtil.validateToken(tokenVerify);
         Optional<UserModel> user = userRepository.findByUsername(username);
@@ -74,7 +76,7 @@ public class UserService {
                 user.get().setUsername(userData.getUsername());
             }
             UserModel userUpdate = userRepository.save(user.get());
-            return new UserDto(userUpdate.getId(), userUpdate.getUsername(), userUpdate.getEmail());
+            return getAuthenticatedUser(userUpdate.getUsername(), userUpdate.getPassword());
         }
         else {
             throw new RuntimeException("Usuario no encontrado o token inválido");

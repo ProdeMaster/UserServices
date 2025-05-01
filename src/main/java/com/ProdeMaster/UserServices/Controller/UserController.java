@@ -32,9 +32,11 @@ public class UserController {
     @PutMapping("")
     public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UpdateUserDto updateData) {
         try {
-           UserDto newUser = userService.updateUser(token, updateData);
-            LOGGER.info("Profile update user: {}", newUser.getUsername());
-            return ResponseEntity.ok(newUser);
+           String newToken = userService.updateUser(token, updateData);
+            String tokenVerify = token.substring(7);
+            String username = jwtUtil.validateToken(tokenVerify);
+            LOGGER.info("Profile update user: {}", username);
+            return ResponseEntity.ok(newToken);
         }
         catch (Exception e) {
             LOGGER.info("Update error: {}", e.getCause());
