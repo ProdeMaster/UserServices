@@ -145,10 +145,11 @@ El servicio cuenta con un Dockerfile optimizado para producción basado en una i
 
 #### Build manual de la imagen
 ```bash
-mvn clean package
+mvn clean package -DskipTests
 docker image build -t user-service .
 ```
 > Es necesario empaquetar la aplicación con `mvn clean package` antes de crear la imagen de docker
+> NOTA: El modificador -DskipTests evita que se ejecuten los test. Esto se hace para evitar tener desplegada la base de datos al momento de empaquetar la aplicación
 
 ---
 
