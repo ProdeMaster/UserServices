@@ -129,7 +129,6 @@ mvn spring-boot:run
 
 #### Opción 2: con Docker
 ```bash
-mvn clean package
 docker image build -t user-service .
 docker run -p 5432:5432 --name my-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_USER=postgres -e POSTGRES_DB=prode_db postgres:17
 docker run user-service
@@ -142,14 +141,6 @@ docker run user-service
 ### Dockerfile
 
 El servicio cuenta con un Dockerfile optimizado para producción basado en una imagen Java 17.
-
-#### Build manual de la imagen
-```bash
-mvn clean package -DskipTests
-docker image build -t user-service .
-```
-> Es necesario empaquetar la aplicación con `mvn clean package` antes de crear la imagen de docker
-> NOTA: El modificador -DskipTests evita que se ejecuten los test. Esto se hace para evitar tener desplegada la base de datos al momento de empaquetar la aplicación
 
 ---
 
