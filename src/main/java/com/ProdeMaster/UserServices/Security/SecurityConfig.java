@@ -10,8 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.session.SessionManagementFilter;
 
-import com.ProdeMaster.UserServices.Security.JwtAuthenticationFilter;
-
 @Configuration
 public class SecurityConfig {
 
@@ -25,14 +23,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // es lo mismo que .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/login", "auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
-                        //.requestMatchers(HttpMethod.GET, "/users/**").permitAll()
-                        .anyRequest().authenticated()
-                        //.anyRequest().permitAll()
-                )
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, SessionManagementFilter.class);
         return http.build();
