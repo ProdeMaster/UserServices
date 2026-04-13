@@ -13,12 +13,13 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<UserModel, Long> {
     Optional<UserModel> findByUsername(String username);
 
+    Optional<UserModel> findById(Long id);
+
     @Query("SELECT u FROM UserModel u WHERE " +
-        "(:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))) AND " +
-        "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
-        "u.deleted = false")
+            "(:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%'))) AND " +
+            "(:email IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+            "u.deleted = false")
     List<UserModel> searchUsers(@Param("username") String username, @Param("email") String email);
 
     List<UserModel> findByDeletedFalse();
 }
-

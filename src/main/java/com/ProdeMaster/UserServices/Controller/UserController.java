@@ -30,26 +30,26 @@ public class UserController {
     }
 
     @PutMapping("")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UpdateUserDto updateData) {
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token,
+            @RequestBody UpdateUserDto updateData) {
         try {
-           String newToken = userService.updateUser(token, updateData);
+            String newToken = userService.updateUser(token, updateData);
             String tokenVerify = token.substring(7);
             String username = jwtUtil.validateToken(tokenVerify);
             LOGGER.info("Profile update user: {}", username);
             return ResponseEntity.ok(newToken);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.info("Update error: {}", e.getCause());
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token,  @PathVariable Long id) {
+    public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token, @PathVariable Long id) {
         String tokenVerify = token.substring(7);
         String username = jwtUtil.validateToken(tokenVerify);
         LOGGER.info("Profile user: {}", username);
-        return ResponseEntity.ok(userService.userProfile(username));
+        return ResponseEntity.ok(userService.userProfile(id));
     }
 
     @DeleteMapping("")
@@ -58,8 +58,11 @@ public class UserController {
         LOGGER.info("Delete user: {}", user.get().getUsername());
         return ResponseEntity.ok(user);
     }
+
+    // TODO: Agregar manejo de errores y paginación a esta consulta
     @GetMapping("/search")
-    public ResponseEntity<?> getSearchUser(@RequestHeader("Authorization") String token, @RequestParam String username, @RequestParam String email) {
+    public ResponseEntity<?> getSearchUser(@RequestHeader("Authorization") String token, @RequestParam String username,
+            @RequestParam String email) {
         LOGGER.info("Search user: {}", username);
         Stream<UserDto> users = userService.searchUsers(token, username, email);
         return ResponseEntity.ok(users);
