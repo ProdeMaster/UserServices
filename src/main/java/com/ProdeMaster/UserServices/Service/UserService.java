@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,13 +33,23 @@ public class UserService {
         return null;
     }
 
+    private String generateTokenFromUsername(String username) {
+        return jwtUtil.generateToken(username);
+    }
+
     public UserModel registerUser(UserModel user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public Optional<UserDto> userProfile(String userName) {
-        return userRepository.findByUsername(userName).map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+        return userRepository.findByUsername(userName)
+                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+    }
+
+    public Optional<UserDto> userProfile(Long id) {
+        return userRepository.findById(id)
+                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail()));
     }
 
     public List<String> getUsersNames() {
@@ -51,13 +60,13 @@ public class UserService {
     public Stream<UserDto> searchUsers(String token, String username, String email) {
         String tokenVerify = token.substring(7);
         String userName = jwtUtil.validateToken(tokenVerify);
-            Optional<UserModel> user = userRepository.findByUsername(userName);
-            if (user.isPresent()) {
-                List<UserModel> users = userRepository.searchUsers(username, email);
-                return users.stream().map(u -> new UserDto(u.getId(), u.getUsername(), u.getEmail()));
-            } else {
-                throw new RuntimeException("Usuario no encontrado o token inválido");
-            }
+        Optional<UserModel> user = userRepository.findByUsername(userName);
+        if (user.isPresent()) {
+            List<UserModel> users = userRepository.searchUsers(username, email);
+            return users.stream().map(u -> new UserDto(u.getId(), u.getUsername(), u.getEmail()));
+        } else {
+            throw new RuntimeException("Usuario no encontrado o token inválido");
+        }
     }
 
     public String updateUser(String token, UpdateUserDto userData) {
@@ -66,15 +75,15 @@ public class UserService {
         Optional<UserModel> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             if (userData.getEmail() != null && !userData.getEmail().isBlank()) {
-                user.get().setEmail (userData.getEmail());
+                user.get().setEmail(userData.getEmail());
             }
             if (userData.getUsername() != null && !userData.getUsername().isBlank()) {
                 user.get().setUsername(userData.getUsername());
             }
             UserModel userUpdate = userRepository.save(user.get());
-            return getAuthenticatedUser(userUpdate.getUsername(), userUpdate.getPassword());
-        }
-        else {
+            String newToken = generateTokenFromUsername(userUpdate.getUsername());
+            return newToken;
+        } else {
             throw new RuntimeException("Usuario no encontrado o token inválido");
         }
     }
@@ -86,21 +95,31 @@ public class UserService {
         if (user.isPresent()) {
             user.get().setDeleted(true);
             userRepository.save(user.get());
-            return userRepository.findByUsername(userName).map(User -> new UserDto(User.getId(), User.getUsername(), User.getEmail()));
-        }
-        else {
+            return userRepository.findByUsername(userName)
+                    .map(User -> new UserDto(User.getId(), User.getUsername(), User.getEmail()));
+        } else {
             throw new RuntimeException("Usuario no encontrado o token inválido");
         }
     }
 
-    public void ActiveUser (String username, String password) {
+    public void ActiveUser(String username, String password) {
         Optional<UserModel> user = userRepository.findByUsername(username);
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
             user.get().setDeleted(false);
             userRepository.save(user.get());
-        }
-        else {
+        } else {
             throw new RuntimeException("Usuario no encontrado o token inválido");
         }
     }
+
+    /*
+     * TODO: public Optional <MyProfileDto> myProfile(String token)
+     *
+     * Este metodo se utilizara para enviar los datos del usuario autenticado, este
+     * metodo tendra como proposito filtrar menos datos ya que la persona que
+     * consulta sus datos es el mismo usuario.
+     * 
+     * A diferencia de userProfile() que devuelve los datos capados del usuario
+     * solicitado
+     */
 }
