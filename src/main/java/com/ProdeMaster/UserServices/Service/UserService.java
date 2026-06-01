@@ -112,14 +112,4 @@ public class UserService {
         }
     }
 
-    /*
-     * TODO: public Optional <MyProfileDto> myProfile(String token)
-     *
-     * Este metodo se utilizara para enviar los datos del usuario autenticado, este
-     * metodo tendra como proposito filtrar menos datos ya que la persona que
-     * consulta sus datos es el mismo usuario.
-     * 
-     * A diferencia de userProfile() que devuelve los datos capados del usuario
-     * solicitado
-     */
 }
