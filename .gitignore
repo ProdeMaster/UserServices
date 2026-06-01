@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Cert ###
+/src/main/resources/certs/private.key
+/src/main/resources/certs/private.pem
+/src/main/resources/certs/private.p12
